@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from datetime import timedelta
-from database_setup import Base, Shelter, Puppy
+from database_setup import Base, Shelter, Puppy, Adopter
 
 
 # Init database session
@@ -57,7 +57,22 @@ def print_puppies_by_shelter(session):
         print '----------------------------------'
         for puppy in puppies_by_shelter[shelter]:
             print puppy.name
+            print puppy.puppy_profile.description
+            print '\n'
         print '\n'
+
+
+# Print puppies ordered by shelter
+def print_adopters(session):
+    all_adopters = session.query(Adopter).order_by(Adopter.name)
+    for adopter in all_adopters:
+        if adopter.puppies:
+            print 'Adopter: ' + adopter.name + ' ' + adopter.last_name
+            print 'Puppies:'
+            for puppy_adoption in adopter.puppies:
+                print '- ' + puppy_adoption.puppy.name +\
+                      ' since ' + puppy_adoption.date.strftime("%d/%m/%y")
+            print '----------------------------------'
 
 
 # Main function to run the script
@@ -67,6 +82,7 @@ def run():
     print_young_puppies(session)
     print_puppies_by_weight(session)
     print_puppies_by_shelter(session)
+    print_adopters(session)
 
 # Run script
 run()
