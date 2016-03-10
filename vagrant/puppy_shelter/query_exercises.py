@@ -53,7 +53,9 @@ def print_puppies_by_shelter(session):
         puppies_by_shelter[shelter] = puppies_for_shelter
 
     for shelter in puppies_by_shelter:
-        print 'Shelter: ' + shelter.name
+        print 'Shelter: ' + shelter.name + ' - ' + \
+               str(shelter.current_occupancy) + '/' + \
+               str(shelter.maximum_capacity)
         print '----------------------------------'
         for puppy in puppies_by_shelter[shelter]:
             print puppy.name
@@ -75,6 +77,13 @@ def print_adopters(session):
             print '----------------------------------'
 
 
+def adopt_a_puppy():
+    answer = raw_input('You want to adopt a puppy? Y/n: ')
+    while answer != 'Y' and answer != 'n':
+        answer = raw_input('You want to adopt a puppy? Y/n: ')
+    print 'Great!'
+
+
 # Main function to run the script
 def run():
     session = db_init()
@@ -83,6 +92,7 @@ def run():
     print_puppies_by_weight(session)
     print_puppies_by_shelter(session)
     print_adopters(session)
+    adopt_a_puppy()
 
 # Run script
 run()

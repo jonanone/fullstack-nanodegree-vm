@@ -24,6 +24,8 @@ shelter1 = Shelter(
     city="Oakland",
     state="California",
     zipCode="94601",
+    maximum_capacity=50,
+    current_occupancy=0,
     website="oaklandanimalservices.org")
 session.add(shelter1)
 
@@ -33,6 +35,8 @@ shelter2 = Shelter(
     city="San Francisco",
     state="California",
     zipCode="94103",
+    maximum_capacity=50,
+    current_occupancy=0,
     website="sfspca.org")
 session.add(shelter2)
 
@@ -42,6 +46,8 @@ shelter3 = Shelter(
     city="San Francisco",
     state="California",
     zipCode="94103",
+    maximum_capacity=20,
+    current_occupancy=0,
     website="http://wonderdogrescue.org")
 session.add(shelter3)
 
@@ -51,6 +57,8 @@ shelter4 = Shelter(
     city="Alameda",
     state="California",
     zipCode="94501",
+    maximum_capacity=3,
+    current_occupancy=0,
     website="hsalameda.org")
 session.add(shelter4)
 
@@ -60,6 +68,8 @@ shelter5 = Shelter(
     city="Menlo Park",
     state="California",
     zipCode="94025",
+    maximum_capacity=10,
+    current_occupancy=0,
     website="paloaltohumane.org")
 session.add(shelter5)
 
@@ -141,12 +151,50 @@ def GetRandomAdopter():
     random_adopter = session.query(Adopter).order_by(func.random()).first()
     return random_adopter
 
+
+def check_puppy_into_random_shelter(puppy):
+    random_shelter = session.query(Shelter).filter_by(id=randint(1, 5)).first()
+    if random_shelter.current_occupancy == random_shelter.maximum_capacity:
+        print 'We tried to check ' + puppy.name + ' into '\
+              + random_shelter.name
+        print 'but it is at full capacity.'
+        print 'Please, select another shelter to check in ' + puppy.name
+        print 'Shelters: '
+        shelters = session.query(Shelter).filter(
+            Shelter.id != random_shelter.id).order_by(Shelter.id)
+        shelter_ids = []
+        for shelter in shelters:
+            if shelter.current_occupancy < shelter.maximum_capacity:
+                print str(shelter.id) + '.- ' + shelter.name + ' - ' + \
+                      str(shelter.current_occupancy) + '/' + \
+                      str(shelter.maximum_capacity)
+                shelter_ids.append(shelter.id)
+        answer = int(raw_input('Select the shelter number: '))
+        while (answer not in shelter_ids):
+            answer = int(raw_input('That is not a valid selection.\n \
+                                Please, select another shelter: '))
+        for shelter in shelters:
+            if answer == shelter.id:
+                puppy.shelter_id = shelter.id
+                puppy.shelter = shelter
+                session.add(puppy)
+                shelter.current_occupancy += 1
+                session.add(shelter)
+                print 'Congrats! ' + puppy.name + ' has been checked into '\
+                      + shelter.name
+    else:
+        puppy.shelter_id = random_shelter.id
+        puppy.shelter = random_shelter
+        session.add(puppy)
+        random_shelter.current_occupancy += 1
+        session.add(random_shelter)
+
+
 for i, x in enumerate(male_names):
     new_puppy = Puppy(
         name=x,
         gender="male",
         date_of_birth=CreateRandomAge(),
-        shelter_id=randint(1, 5),
         weight=CreateRandomWeight())
     session.add(new_puppy)
     new_puppy_profile = PuppyProfile(picture_url=random.choice(puppy_images),
@@ -154,6 +202,7 @@ for i, x in enumerate(male_names):
                                      special_needs=CreateRandomSpecialNeeds(),
                                      puppy=new_puppy)
     session.add(new_puppy_profile)
+    check_puppy_into_random_shelter(new_puppy)
     session.commit()
 
 for i, x in enumerate(female_names):
@@ -161,7 +210,6 @@ for i, x in enumerate(female_names):
         name=x,
         gender="female",
         date_of_birth=CreateRandomAge(),
-        shelter_id=randint(1, 5),
         weight=CreateRandomWeight())
     session.add(new_puppy)
     new_puppy_profile = PuppyProfile(picture_url=random.choice(puppy_images),
@@ -169,6 +217,7 @@ for i, x in enumerate(female_names):
                                      special_needs=CreateRandomSpecialNeeds(),
                                      puppy=new_puppy)
     session.add(new_puppy_profile)
+    check_puppy_into_random_shelter(new_puppy)
     session.commit()
 
 for i, x in enumerate(adopter_names):
@@ -177,6 +226,7 @@ for i, x in enumerate(adopter_names):
         last_name=random.choice(adopter_last_names))
     session.add(new_adopter)
     session.commit()
+
 
 adopted_puppies = session.query(Puppy)[:10]
 for puppy in adopted_puppies:
