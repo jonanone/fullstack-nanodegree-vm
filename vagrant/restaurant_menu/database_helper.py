@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import inspect
-from database_setup import Base, Restaurant
+from database_setup import Base, Restaurant, MenuItem
 
 
 # Init database session
@@ -49,6 +49,47 @@ def edit_restaurant(session, restaurant_id, data):
 def delete_restaurant(session, restaurant_id):
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
     session.delete(restaurant)
+    session.commit()
+    return 1
+
+
+# Get all restaurant items
+def get_restaurant_items(session, restaurant):
+    items = session.query(MenuItem).filter_by(restaurant_id=restaurant.id)
+    return items
+
+
+# Get menu item by id
+def get_menu_item(session, menu_item_id):
+    return session.query(MenuItem).filter_by(id=menu_item_id).one()
+
+
+# Add new menu item
+def add_menu_item(session, restaurant, data):
+    new_item = MenuItem(name=data['name'],
+                        description=data['description'],
+                        price=data['price'],
+                        restaurant_id=restaurant.id)
+    session.add(new_item)
+    session.commit()
+    return new_item
+
+
+# Edit menu item
+def edit_menu_item(session, edited_item, data):
+    mapper = inspect(MenuItem)
+    for key in data:
+        for column in mapper.attrs:
+            if key == column.key and data[key]:
+                setattr(edited_item, key, data[key])
+    session.add(edited_item)
+    session.commit()
+    return edited_item
+
+
+# Delete given menu item
+def delete_menu_item(session, menu_item):
+    session.delete(menu_item)
     session.commit()
     return 1
 

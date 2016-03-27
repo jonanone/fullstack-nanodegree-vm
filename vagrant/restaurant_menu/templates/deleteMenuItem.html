@@ -1,0 +1,10 @@
+<html>
+    <body>
+        <h1>{{ restaurant.name }}</h1>
+        <h2>Are you sure you want to delete {{ item.name }} menu item?</h2>
+        <form method="post" action="{{ url_for('deleteMenuItem', restaurant_id=restaurant.id, item_id=item.id) }}"> 
+            <input type="submit" value="Delete">
+        </form> 
+        <a href="{{ url_for('restaurantMenu', restaurant_id=restaurant.id) }}">No, go back to restaurant menu</a>
+    </body>
+</html>
