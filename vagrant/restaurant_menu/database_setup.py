@@ -1,4 +1,3 @@
-import sys
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -12,7 +11,8 @@ class Restaurant(Base):
 
     name = Column(String(80), nullable=False)
     id = Column(Integer, primary_key=True)
-    #Defining One to Many relationships with the relationship function on the Parent Table
+    # Defining One to Many relationships with the relationship
+    # function on the Parent Table
     menu_items = relationship('MenuItem',
                               backref="post",
                               cascade="all, delete-orphan",
@@ -29,6 +29,17 @@ class MenuItem(Base):
     price = Column(String(8))
     restaurant_id = Column(Integer, ForeignKey('restaurant.id'))
     restaurant = relationship(Restaurant)
+
+    @property
+    def serialize(self):
+        # Returns object data in easily serializable format
+        return {
+                'name': self.name,
+                'description': self.description,
+                'id': self.id,
+                'price': self.price,
+                'course': self.course
+        }
 
 
 engine = create_engine('sqlite:///restaurantmenu.db')

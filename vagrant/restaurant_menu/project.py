@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import jsonify
 from database_helper import db_init
 from database_helper import add_menu_item, edit_menu_item, delete_menu_item
 from database_helper import get_menu_item, get_restaurant, get_restaurant_items
@@ -72,6 +73,20 @@ def deleteMenuItem(restaurant_id, item_id):
         return render_template('deleteMenuItem.html',
                                restaurant=restaurant,
                                item=menu_item)
+
+
+# Restaurant menu API
+@app.route('/restaurants/<int:restaurant_id>/menu/JSON')
+def restaurantMenuJSON(restaurant_id):
+    restaurant = get_restaurant(session, restaurant_id)
+    items = get_restaurant_items(session, restaurant)
+    return jsonify(MenuItems=[item.serialize for item in items])
+
+
+@app.route('/restaurants/<int:restaurant_id>/menu/item/<int:item_id>/JSON')
+def restaurantMenuItemJSON(restaurant_id, item_id):
+    menu_item = get_menu_item(session, item_id)
+    return jsonify(MenuItem=menu_item.serialize)
 
 
 if __name__ == '__main__':
