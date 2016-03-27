@@ -12,6 +12,11 @@ class Restaurant(Base):
 
     name = Column(String(80), nullable=False)
     id = Column(Integer, primary_key=True)
+    #Defining One to Many relationships with the relationship function on the Parent Table
+    menu_items = relationship('MenuItem',
+                              backref="post",
+                              cascade="all, delete-orphan",
+                              lazy='dynamic')
 
 
 class MenuItem(Base):

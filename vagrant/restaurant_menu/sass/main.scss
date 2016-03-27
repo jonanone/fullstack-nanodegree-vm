@@ -28,12 +28,10 @@ dt {
 }
 
 a {
-    text-decoration: none;
-    color: #EAEAEA;
-    font-size: .75em;
+    text-decoration: none;    
 }
 
-.restaurant {
+body.home {
     .header {
         background: url(../images/restaurant-bg.jpeg) no-repeat bottom center; 
         -webkit-background-size: cover;
@@ -63,6 +61,92 @@ a {
                 padding: 10px;
                 border-radius: 2px;
                 box-shadow: 0px 5px 10px black;
+                color: #EAEAEA;
+                font-size: .75em;
+            }            
+        }
+        .restaurants {  
+            .restaurant-container {
+                display: inline-block;
+                width: 50%;
+                float: left;
+                height: 200px;
+                margin-bottom: 45px;                
+                .wrapper {
+                    padding: 10px;
+                    position: relative;
+                    .restaurant {                    
+                        background-color: white;
+                        padding: 10px;
+                        height: 100%;
+                        border-radius: 2px;
+                        box-shadow: 0px 5px 10px black;
+                        .name {
+                            font-size: 1.5em;
+                            display: inline-block;
+                        }
+                        .price {
+                            display: inline-block;
+                            color: gray;                            
+                        }
+                        .description {
+                            border-top: 1px solid #EAEAEA;
+                            padding-top: 5px;
+                            margin-top: 5px;
+                        }
+                        .actions {
+                            position: absolute;
+                            bottom: 0;
+                            right: 10px;
+                            padding: 10px;
+                            margin-top: 10px;
+                            margin-bottom: 20px;
+                            a {
+                                padding: 10px;
+                                color: gray;
+                                background-color: transparent;                                
+                                font-size: .75em;
+                            }                            
+                        }
+                    }
+                }                        
+            }                  
+        }
+    }
+}
+
+body.restaurant {
+    .header {
+        background: url(../images/restaurant-bg.jpeg) no-repeat bottom center; 
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+        height: 500px;
+        text-align: center;
+        position: relative;
+        box-shadow: 0px 0px 10px black;
+        h1 {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+        }
+    }
+    .container {
+        max-width: 640px;
+        margin: 30px auto;
+        .top-actions {
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            a {
+                background-color: #111;
+                padding: 10px;
+                border-radius: 2px;
+                box-shadow: 0px 5px 10px black;
+                color: #EAEAEA;
+                font-size: .75em;
             }            
         }
         .items {  
@@ -105,6 +189,7 @@ a {
                                 padding: 10px;
                                 color: gray;
                                 background-color: transparent;
+                                font-size: .75em;
                             }                            
                         }
                     }

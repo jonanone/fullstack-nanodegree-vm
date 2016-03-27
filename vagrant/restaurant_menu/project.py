@@ -2,11 +2,19 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from database_helper import db_init
 from database_helper import add_menu_item, edit_menu_item, delete_menu_item
 from database_helper import get_menu_item, get_restaurant, get_restaurant_items
+from database_helper import get_restaurants
 app = Flask(__name__)
 session = db_init()
 
 
 @app.route('/')
+@app.route('/restaurants/')
+def restaurants():
+    restaurants = get_restaurants(session)
+    return render_template('restaurants.html',
+                           restaurants=restaurants)
+
+
 @app.route('/restaurants/<int:restaurant_id>/menu/')
 def restaurantMenu(restaurant_id):
     restaurant = get_restaurant(session, restaurant_id)
