@@ -19,6 +19,16 @@ def get_restaurants(session):
     return all_restaurants
 
 
+# Get restaurants ordered by given attribute
+def get_ordered_restaurants(session, ordering_attr):
+    all_restaurants = None
+    if ordering_attr == 'name':
+        all_restaurants = session.query(Restaurant).order_by(Restaurant.name)
+    elif ordering_attr == 'id':
+        all_restaurants = session.query(Restaurant).order_by(Restaurant.id)
+    return all_restaurants
+
+
 # Get restaurant by id
 def get_restaurant(session, restaurant_id):
     return session.query(Restaurant).filter_by(id=restaurant_id).one()

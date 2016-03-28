@@ -1,9 +1,11 @@
 from flask import Flask, render_template, redirect, url_for, request
+from flask import jsonify
 from database_helper import db_init
 from database_helper import add_restaurant, edit_restaurant, delete_restaurant
 from database_helper import add_menu_item, edit_menu_item, delete_menu_item
 from database_helper import get_menu_item, get_restaurant
 from database_helper import get_restaurants, get_restaurant_items
+from database_helper import get_ordered_restaurants
 
 # Initialization
 app = Flask(__name__)
@@ -113,6 +115,32 @@ def deleteMenuItem(restaurant_id, item_id):
         return render_template('deleteMenuItem.html',
                                restaurant=restaurant,
                                item=menu_item)
+
+
+# Restaurant Menu APP API
+
+@app.route('/restaurants/JSON&order_by=<path:ordering_attr>')
+def listRestaurantsJSON(ordering_attr):
+    restaurants = get_ordered_restaurants(session, ordering_attr)
+    if restaurants:
+        return jsonify(Restaurants=[
+            restaurant.serialize for restaurant in restaurants
+            ])
+    else:
+        return jsonify(Restaurants=restaurants)
+
+
+@app.route('/restaurant/<int:restaurant_id>/menu/JSON')
+def restaurantMenuJSON(restaurant_id):
+    restaurant = get_restaurant(session, restaurant_id)
+    items = get_restaurant_items(session, restaurant)
+    return jsonify(MenuItems=[item.serialize for item in items])
+
+
+@app.route('/restaurant/<int:restaurant_id>/menu/item/<int:item_id>/JSON')
+def restaurantMenuItemJSON(restaurant_id, item_id):
+    menu_item = get_menu_item(session, item_id)
+    return jsonify(MenuItem=menu_item.serialize)
 
 
 if __name__ == '__main__':

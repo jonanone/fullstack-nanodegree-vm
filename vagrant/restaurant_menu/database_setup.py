@@ -18,6 +18,14 @@ class Restaurant(Base):
                               cascade="all, delete-orphan",
                               lazy='dynamic')
 
+    @property
+    def serialize(self):
+        # Returns object data in easily serializable format
+        return {
+                'id': self.id,
+                'name': self.name,
+        }
+
 
 class MenuItem(Base):
     __tablename__ = 'menu_item'

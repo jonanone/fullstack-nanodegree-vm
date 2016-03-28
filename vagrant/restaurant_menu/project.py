@@ -76,14 +76,14 @@ def deleteMenuItem(restaurant_id, item_id):
 
 
 # Restaurant menu API
-@app.route('/restaurants/<int:restaurant_id>/menu/JSON')
+@app.route('/restaurant/<int:restaurant_id>/menu/JSON')
 def restaurantMenuJSON(restaurant_id):
     restaurant = get_restaurant(session, restaurant_id)
     items = get_restaurant_items(session, restaurant)
     return jsonify(MenuItems=[item.serialize for item in items])
 
 
-@app.route('/restaurants/<int:restaurant_id>/menu/item/<int:item_id>/JSON')
+@app.route('/restaurant/<int:restaurant_id>/menu/item/<int:item_id>/JSON')
 def restaurantMenuItemJSON(restaurant_id, item_id):
     menu_item = get_menu_item(session, item_id)
     return jsonify(MenuItem=menu_item.serialize)
