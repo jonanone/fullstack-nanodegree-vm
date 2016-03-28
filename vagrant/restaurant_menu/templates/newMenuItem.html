@@ -1,24 +1,31 @@
 <html>
-    <body>
-        <h1>New Menu item for {{ restaurant.name }}</h1>
-        <form action="{{ url_for('newMenuItem', restaurant_id=restaurant.id) }}" method="post">
-            <p>Name:</p>
-            <input type='text' size='30' name='name'>
-            </br>
-            <p>Description:</p>
-            <textarea name='description' rows='10' cols='28'></textarea>
-            </br>
-            <p>Price:</p>
-            <input type='text' size='30' name='price'>
-            </br>
-            <p>Course:</p>
-            <input type='radio' name='course' value='Entree'>Entree</input>
-            <input type='radio' name='course' value='Dessert'>Dessert</input>
-            <input type='radio' name='course' value='Beverage'>Beverage</input>
-            <input type='radio' name='course' value='Appetizer'>Appetizer</input>
-            </br>
-            </br>
-            <input type='submit' value='Create'>
-        </form>
+    <head>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/main.css') }}">
+    </head>
+    <body class="item-form">
+        <div class="header">
+            <h1>{{ restaurant.name }}</h1>
+        </div>
+        <div class="container">
+            <h2 class="title">New menu item</h2>     
+            <form action="{{ url_for('newMenuItem', restaurant_id=restaurant.id) }}" method='post' class="form">
+                <p>Name:</p>
+                <input type='text' size='30' name='name'>
+                </br>
+                <p>Description:</p>
+                <textarea name='description' rows='10' cols='28'></textarea>
+                </br>
+                <p>Price:</p>
+                <input type='text' size='30' name='price'>
+                <p>Course:</p>
+                <input type='radio' name='course' value='Entree'><span>Entree</span></input>
+                <input type='radio' name='course' value='Dessert'><span>Dessert</span></input>
+                <input type='radio' name='course' value='Beverage'><span>Beverage</span></input>
+                <input type='radio' name='course' value='Appetizer'><span>Appetizer</span></input>
+                </br>
+                </br>
+                <input type='submit' value='Create'>
+            </form>
+        </div>
     </body>
 </html>
