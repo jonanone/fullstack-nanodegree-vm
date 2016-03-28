@@ -69,6 +69,7 @@ def add_menu_item(session, restaurant, data):
     new_item = MenuItem(name=data['name'],
                         description=data['description'],
                         price=data['price'],
+                        course=data['course'],
                         restaurant_id=restaurant.id)
     session.add(new_item)
     session.commit()

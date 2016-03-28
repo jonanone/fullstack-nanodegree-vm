@@ -1,21 +1,19 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for, request
+from database_helper import db_init
+from database_helper import add_restaurant, edit_restaurant, delete_restaurant
+from database_helper import add_menu_item, edit_menu_item, delete_menu_item
+from database_helper import get_menu_item, get_restaurant
+from database_helper import get_restaurants, get_restaurant_items
+
+# Initialization
 app = Flask(__name__)
-
-
-# Fake Restaurants
-restaurant = {'name': 'The CRUDdy Crab', 'id': '1'}
-
-restaurants = [{'name': 'The CRUDdy Crab', 'id': '1'}, {'name': 'Blue Burgers', 'id': '2'}, {'name': 'Taco Hut', 'id': '3'}]
-
-
-# Fake Menu Items
-items = [{'name': 'Cheese Pizza', 'description': 'made with fresh cheese', 'price': '$5.99', 'course': 'Entree', 'id': '1'},{'name': 'Chocolate Cake', 'description': 'made with Dutch Chocolate', 'price': '$3.99', 'course': 'Dessert', 'id': '2'}, {'name': 'Caesar Salad', 'description': 'with fresh organic vegetables', 'price': '$5.99', 'course': 'Entree', 'id': '3'}, {'name': 'Iced Tea', 'description': 'with lemon', 'price': '$.99', 'course': 'Beverage', 'id': '4'}, {'name': 'Spinach Dip', 'description': 'creamy dip with fresh spinach', 'price': '$1.99', 'course': 'Appetizer', 'id': '5'}]
-item = {'name': 'Cheese Pizza', 'description': 'made with fresh cheese', 'price': '$5.99', 'course': 'Entree'}
+session = db_init()
 
 
 @app.route('/')
 @app.route('/restaurants/')
-def list_restaurants():
+def listRestaurants():
+    restaurants = get_restaurants(session)
     return render_template('restaurants.html',
                            restaurants=restaurants)
 
@@ -23,45 +21,99 @@ def list_restaurants():
 @app.route('/restaurant/<int:restaurant_id>/')
 @app.route('/restaurant/<int:restaurant_id>/menu/')
 def restaurantMenu(restaurant_id):
+    restaurant = get_restaurant(session, restaurant_id)
+    items = get_restaurant_items(session, restaurant)
     return render_template('menu.html',
                            restaurant=restaurant,
                            items=items)
 
 
-@app.route('/restaurant/new')
+@app.route('/restaurant/new', methods=['GET', 'POST'])
 def newRestaurant():
-    return render_template('newRestaurant.html')
+    if request.method == 'POST':
+        new_restaurant = add_restaurant(session,
+                                        {'name': request.form['name']})
+        print new_restaurant.name + ' added!'
+        return redirect(url_for('listRestaurants'))
+    else:
+        return render_template('newRestaurant.html')
 
 
-@app.route('/restaurant/<int:restaurant_id>/edit')
+@app.route('/restaurant/<int:restaurant_id>/edit', methods=['GET', 'POST'])
 def editRestaurant(restaurant_id):
-    return render_template('editRestaurant.html',
-                           restaurant=restaurant)
+    restaurant = get_restaurant(session, restaurant_id)
+    if request.method == 'POST':
+        edited_restaurant = edit_restaurant(session,
+                                            restaurant_id,
+                                            request.form)
+        print edited_restaurant.name + ' edited!'
+        return redirect(url_for('listRestaurants'))
+    else:
+        return render_template('editRestaurant.html',
+                               restaurant=restaurant)
 
 
-@app.route('/restaurant/<int:restaurant_id>/delete')
+@app.route('/restaurant/<int:restaurant_id>/delete', methods=['GET', 'POST'])
 def deleteRestaurant(restaurant_id):
-    return render_template('deleteRestaurant.html',
-                           restaurant=restaurant)
+    restaurant = get_restaurant(session, restaurant_id)
+    if request.method == 'POST':
+        restaurant_deleted = delete_restaurant(session, restaurant_id)
+        if restaurant_deleted:
+            print 'Restaurant deleted!'
+        else:
+            print 'That restaurant cannot be deleted. Please, try again later.'
+        return redirect(url_for('listRestaurants'))
+    else:
+        return render_template('deleteRestaurant.html',
+                               restaurant=restaurant)
 
 
-@app.route('/restaurant/<int:restaurant_id>/menu/item/new')
+@app.route('/restaurant/<int:restaurant_id>/menu/item/new',
+           methods=['GET', 'POST'])
 def newMenuItem(restaurant_id):
-    return render_template('newMenuItem.html',
-                           restaurant=restaurant)
+    restaurant = get_restaurant(session, restaurant_id)
+    if request.method == 'POST':
+        new_item = add_menu_item(session,
+                                 restaurant,
+                                 request.form)
+        print new_item.name + ' added successfully.'
+        return redirect(url_for('restaurantMenu',
+                                restaurant_id=restaurant_id))
+    else:
+        return render_template('newMenuItem.html',
+                               restaurant=restaurant)
 
 
-@app.route('/restaurant/<int:restaurant_id>/menu/item/<int:item_id>/edit')
+@app.route('/restaurant/<int:restaurant_id>/menu/item/<int:item_id>/edit',
+           methods=['GET', 'POST'])
 def editMenuItem(restaurant_id, item_id):
-    return render_template('editMenuItem.html',
-                           restaurant=restaurant,
-                           item=item)
+    menu_item = get_menu_item(session, item_id)
+    restaurant = get_restaurant(session, restaurant_id)
+    if request.method == 'POST':
+        edited_item = edit_menu_item(session, menu_item, request.form)
+        print edited_item.name + ' edited successfully.'
+        return redirect(url_for('restaurantMenu', restaurant_id=restaurant_id))
+    else:
+        return render_template('editMenuItem.html',
+                               restaurant=restaurant,
+                               item=menu_item)
 
 
-@app.route('/restaurant/<int:restaurant_id>/menu/item/<int:item_id>/delete')
+@app.route('/restaurant/<int:restaurant_id>/menu/item/<int:item_id>/delete',
+           methods=['GET', 'POST'])
 def deleteMenuItem(restaurant_id, item_id):
-    return render_template('deleteMenuItem.html',
-                           item=item)
+    menu_item = get_menu_item(session, item_id)
+    restaurant = get_restaurant(session, restaurant_id)
+    if request.method == 'POST':
+        item_deleted = delete_menu_item(session, menu_item)
+        if item_deleted:
+            print 'Item deleted successfully.'
+        return redirect(url_for('restaurantMenu', restaurant_id=restaurant.id))
+    else:
+        return render_template('deleteMenuItem.html',
+                               restaurant=restaurant,
+                               item=menu_item)
+
 
 if __name__ == '__main__':
     app.debug = True
