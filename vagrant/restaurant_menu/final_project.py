@@ -1,47 +1,67 @@
-from flask import Flask
+from flask import Flask, render_template
 app = Flask(__name__)
+
+
+# Fake Restaurants
+restaurant = {'name': 'The CRUDdy Crab', 'id': '1'}
+
+restaurants = [{'name': 'The CRUDdy Crab', 'id': '1'}, {'name': 'Blue Burgers', 'id': '2'}, {'name': 'Taco Hut', 'id': '3'}]
+
+
+# Fake Menu Items
+items = [{'name': 'Cheese Pizza', 'description': 'made with fresh cheese', 'price': '$5.99', 'course': 'Entree', 'id': '1'},{'name': 'Chocolate Cake', 'description': 'made with Dutch Chocolate', 'price': '$3.99', 'course': 'Dessert', 'id': '2'}, {'name': 'Caesar Salad', 'description': 'with fresh organic vegetables', 'price': '$5.99', 'course': 'Entree', 'id': '3'}, {'name': 'Iced Tea', 'description': 'with lemon', 'price': '$.99', 'course': 'Beverage', 'id': '4'}, {'name': 'Spinach Dip', 'description': 'creamy dip with fresh spinach', 'price': '$1.99', 'course': 'Appetizer', 'id': '5'}]
+item = {'name': 'Cheese Pizza', 'description': 'made with fresh cheese', 'price': '$5.99', 'course': 'Entree'}
 
 
 @app.route('/')
 @app.route('/restaurants/')
-def restaurants():
-    return 'Show all the restaurants'
+def list_restaurants():
+    return render_template('restaurants.html',
+                           restaurants=restaurants)
 
 
 @app.route('/restaurant/<int:restaurant_id>/')
 @app.route('/restaurant/<int:restaurant_id>/menu/')
 def restaurantMenu(restaurant_id):
-    return 'This should show restaurant %s menu items' % restaurant_id
+    return render_template('menu.html',
+                           restaurant=restaurant,
+                           items=items)
 
 
 @app.route('/restaurant/new')
 def newRestaurant():
-    return 'This should show new restaurant form'
+    return render_template('newRestaurant.html')
 
 
 @app.route('/restaurant/<int:restaurant_id>/edit')
 def editRestaurant(restaurant_id):
-    return 'This should show edit restaurant %s form' % restaurant_id
+    return render_template('editRestaurant.html',
+                           restaurant=restaurant)
 
 
 @app.route('/restaurant/<int:restaurant_id>/delete')
 def deleteRestaurant(restaurant_id):
-    return 'This should show delete restaurant %s form' % restaurant_id
+    return render_template('deleteRestaurant.html',
+                           restaurant=restaurant)
 
 
 @app.route('/restaurant/<int:restaurant_id>/menu/item/new')
 def newMenuItem(restaurant_id):
-    return 'This should show new menu item form for restaurant %s' % restaurant_id
+    return render_template('newMenuItem.html',
+                           restaurant=restaurant)
 
 
 @app.route('/restaurant/<int:restaurant_id>/menu/item/<int:item_id>/edit')
 def editMenuItem(restaurant_id, item_id):
-    return 'This should show edit menu item form for item %s' % item_id
+    return render_template('editMenuItem.html',
+                           restaurant=restaurant,
+                           item=item)
 
 
 @app.route('/restaurant/<int:restaurant_id>/menu/item/<int:item_id>/delete')
 def deleteMenuItem(restaurant_id, item_id):
-    return 'This should show delete menu item form for item %s' % item_id
+    return render_template('deleteMenuItem.html',
+                           item=item)
 
 if __name__ == '__main__':
     app.debug = True
